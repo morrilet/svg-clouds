@@ -62,10 +62,49 @@
             }
         </style>
 
-        <svg-cloud id="my-first-cloud">
-            <cloud-component class="cloud-back"></cloud-component>
+        <!-- This is an interesting approach where all the layers are handled as filters and the main object can be the only one. -->
+        <!-- I think I like that from a useability standpoint but I need to sort out the `feOffset` amounts based on the actual height of the cloud. -->
+        <svg xmlns="http://www.w3.org/2000/svg" style="height: 0; width: 0; position: absolute">
+            <filter id="cloud-filter" filterUnits="userSpaceOnUse" style="color-interpolation-filters:sRGB">
+                <feTurbulence type="fractalNoise" seed="462" baseFrequency="0.011" numOctaves="5" result="noise1" />
+                <feTurbulence type="fractalNoise" seed="462" baseFrequency="0.011" numOctaves="2" result="noise2" />
+                
+                <feGaussianBlur in="SourceGraphic" stdDeviation="20" />
+                <feDisplacementMap in="blur1" scale="100" in2="noise1" result="cloud1" />
+                <feFlood flood-color="rgb(215,215,215)" flood-opacity="0.3" />
+                <feComposite operator="in" in2="SourceGraphic" />
+                <feOffset dx="-10" dy="-3" />
+                <feMorphology radius="20" />
+                <feGaussianBlur stdDeviation="20" />
+
+                <feDisplacementMap scale="100" in2="noise1" result="cloud2" />
+                <feFlood flood-color="rgb(66,105,146)" flood-opacity="0.2" />
+                <feComposite operator="in" in2="SourceGraphic" />
+                <feOffset dx="-10" dy="40" />
+                <feMorphology radius="0 40" />
+                <feGaussianBlur stdDeviation="20" />
+
+                <feDisplacementMap scale="80" in2="noise2" result="cloud3" />
+                <feFlood flood-color="rgb(0,0,0)" flood-opacity="0.4" />
+                <feComposite operator="in" in2="SourceGraphic" />
+                <feOffset dx="20" dy="60" />
+                <feMorphology radius="0 65" />
+                <feGaussianBlur stdDeviation="20" />
+
+                <feDisplacementMap scale="50" in2="noise2" result="cloud4" />
+                <feMerge>
+                    <feMergeNode in="cloud1" id="feMergeNode954" />
+                    <feMergeNode in="cloud2" id="feMergeNode956" />
+                    <feMergeNode in="cloud3" id="feMergeNode958" />
+                    <feMergeNode in="cloud4" id="feMergeNode960" />
+                </feMerge>
+            </filter>
+        </svg>
+
+        <svg-cloud id="my-first-cloud" style="filter: url(#cloud-filter); background-color: #fff;">
+            <!-- <cloud-component class="cloud-back"></cloud-component>
             <cloud-component class="cloud-mid"></cloud-component>
-            <cloud-component class="cloud-front"></cloud-component>
+            <cloud-component class="cloud-front"></cloud-component> -->
         </svg-cloud>
     </body>
 </html>
