@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="index.css">
+        <script src="index.js"></script>
+        <script>
+            window.addEventListener("load", () => {
+                const cloudBackConfig = {
+                    // Add options here!
+                }
+                const cloudBacks = document.getElementsByClassName("cloud-back");
+                for (let i = 0; i < cloudBacks.length; i++) {
+                    cloudBacks[i].options = cloudBackConfig;
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <style>
+            svg-cloud#my-first-cloud {
+                position: absolute;
+                height: 200px;
+                width: 400px;
+                top: 25%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .cloud-back {
+                position: absolute;
+                height: 100%;
+                width: 100%;
+
+                border-radius: 50% 50% 5% 5%;
+                background-color: #fff;
+                box-shadow: 0 0 4rem 0px #fff;
+            }
+
+            .cloud-mid {
+                position: absolute;
+                width: 90%;
+                height: 30%;
+                left: 50%;
+                top: 100%;
+                transform: translate(-50%, -100%);
+
+                border-radius: 50% 50% 5% 5%;
+                background-color: #ccc;
+                box-shadow: 0 0 4rem 0px #ccc;
+            }
+
+            .cloud-front {
+                position: absolute;
+                width: 80%;
+                height: 5%;
+                left: 50%;
+                top: 100%;
+                transform: translate(-50%, -100%);
+
+                border-radius: 50% 50% 5% 5%;
+                background-color: #888;
+                box-shadow: 0 0 4rem 0px #888;
+            }
+        </style>
+
+        <svg-cloud id="my-first-cloud">
+            <cloud-component class="cloud-back"></cloud-component>
+            <cloud-component class="cloud-mid"></cloud-component>
+            <cloud-component class="cloud-front"></cloud-component>
+        </svg-cloud>
+    </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "svg-clouds",
+  "version": "1.0.0",
+  "description": "A set of dynamic SVG filters and Javascript utilities for generating clouds",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "SVG"
+  ],
+  "author": "morrilet",
+  "license": "ISC"
+}
