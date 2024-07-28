@@ -21,7 +21,6 @@ class SVGCloud extends HTMLElement {
             const children = this.querySelectorAll(selector);
             
             children.forEach(child => {
-                console.log(child);
                 if (child.nodeName === "SVG-CLOUD-PART") {
                     child.options = Object.assign(child.options, options);
                 };
@@ -46,8 +45,9 @@ class SVGCloud extends HTMLElement {
             for (const el of mutation.addedNodes) {
                 if (el.nodeName == "SVG-CLOUD-PART") {
                     if (el.getAttribute("data-uuid") === null) {
-                        const cloudPartUUID = crypto.randomUUID();
-                        el.connectFilter(cloudPartUUID);
+                        // Connect the filter on the new child element. We might be able to do this in the constructor of the child directly,
+                        // but I haven't had success with that just yet. I suspect we need the parent to be connected first, so we do it here.
+                        el.connectFilter();
                     };
                 };
             };
@@ -65,6 +65,7 @@ class SVGCloudPart extends HTMLElement {
             "turbulence-octaves",
             "blur-amount",
             "displacement-scale",
+            "ignore-effect",
         ];
     }
 
@@ -77,7 +78,21 @@ class SVGCloudPart extends HTMLElement {
             turbulenceOctaves: 4,
             blurAmount: 15,
             displacementScale: 120,
+            ignoreEffect: false,
         };
+    }
+
+    getAttributes() {
+        const attributes = {}
+        this.hasAttribute("seed") ? attributes['seed'] = parseInt(this.getAttribute("seed")) : undefined;
+        this.hasAttribute("animate") ? attributes['animate'] = this.getAttribute("animate") === "true" : undefined;
+        this.hasAttribute("animation-duration") ? attributes['animationDuration'] = this.getAttribute("animation-duration") : undefined;
+        this.hasAttribute("turbulence-frequency") ? attributes['turbulenceFrequency'] = parseFloat(this.getAttribute("turbulence-frequency")) : undefined;
+        this.hasAttribute("turbulence-octaves") ? attributes['turbulenceOctaves'] = parseInt(this.getAttribute("turbulence-octaves")) : undefined;
+        this.hasAttribute("blur-amount") ? attributes['blurAmount'] = parseInt(this.getAttribute("blur-amount")) : undefined;
+        this.hasAttribute("displacement-scale") ? attributes['displacementScale'] = parseInt(this.getAttribute("displacement-scale")) : undefined;
+        this.hasAttribute("ignore-effect") ? attributes['ignoreEffect'] = this.getAttribute("ignore-effect") === "true" : undefined;
+        return attributes;
     }
 
     get options() {
@@ -99,8 +114,8 @@ class SVGCloudPart extends HTMLElement {
         this.updateValues();
 
         // Internal stuff for tracking our filter node.
+        this._partUUID = crypto.randomUUID();
         this._filterUUID = crypto.randomUUID();
-        this._filterSVG = this.getFilterSVG();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -109,24 +124,27 @@ class SVGCloudPart extends HTMLElement {
     }
 
     updateValues() {
-        this._seed = this.getAttribute("seed") ?? this._options["seed"];
-        this._animate = this.getAttribute("animate") ?? this._options["animate"]
-        this._animationDuration = this.getAttribute("animation-duration") ?? this._options["animationDuration"];
-        this._turbulenceFrequency = this.getAttribute("turbulence-frequency") ?? this._options["turbulenceFrequency"];
-        this._turbulenceOctaves = this.getAttribute("turbulence-octaves") ?? this._options["turbulenceOctaves"];
-        this._blurAmount = this.getAttribute("blur-amount") ?? this._options["blurAmount"];
-        this._displacementScale = this.getAttribute("displacement-scale") ?? this._options["displacementScale"];
-
-        console.log(this)
-        console.log(this.getAttribute("animation-duration"))
+        const attributes = this.getAttributes();
+        this._seed = attributes["seed"] ?? this._options["seed"];
+        this._animate = attributes["animate"] ?? this._options["animate"];
+        this._animationDuration = attributes["animationDuration"] ?? this._options["animationDuration"];
+        this._turbulenceFrequency = attributes["turbulenceFrequency"] ?? this._options["turbulenceFrequency"];
+        this._turbulenceOctaves = attributes["turbulenceOctaves"] ?? this._options["turbulenceOctaves"];
+        this._blurAmount = attributes["blurAmount"] ?? this._options["blurAmount"];
+        this._displacementScale = attributes["displacementScale"] ?? this._options["displacementScale"];
+        this._ignoreEffect = attributes["ignoreEffect"] ?? this._options["ignoreEffect"];
     }
 
     getFilterSVG() {
+        if (this._ignoreEffect === true) {
+            return "";
+        }
+
         const animationTag = `<animate attributeName="values" values="0;360" dur="${this._animationDuration}" repeatCount="indefinite"/>`
         return `
             <svg data-uuid="${this._filterUUID}">
                 <filter id="${this._filterUUID}">
-                    <feTurbulence type="fractalNoise" seed=${this._seed} result="base" baseFrequency="${this._turbulenceFrequency}" numOctaves="${this._turbulenceOctaves}" />
+                    <feTurbulence type="fractalNoise" seed="${this._seed}" result="base" baseFrequency="${this._turbulenceFrequency}" numOctaves="${this._turbulenceOctaves}" />
                     <feColorMatrix in="base" type="hueRotate" values="0" result="base-shifted">
                         ${this._animate ? animationTag : ""}
                     </feColorMatrix>
@@ -143,12 +161,12 @@ class SVGCloudPart extends HTMLElement {
         `;
     }
 
-    connectFilter(uuid) {
-        this.setAttribute('data-uuid', uuid);
+    connectFilter() {
+        this.setAttribute('data-uuid', this._partUUID);
 
         const newStyle = document.createElement("style");
         newStyle.innerHTML = `
-            svg-cloud-part[data-uuid="${uuid}"] {
+            svg-cloud-part[data-uuid="${this._partUUID}"] {
                 filter: url(#${this._filterUUID});
             }
 
@@ -166,7 +184,7 @@ class SVGCloudPart extends HTMLElement {
     }
 
     redeployFilter() {
-        const filter = document.querySelector(`svg[data-uuid="${this._filterUUID}"]`);
+        const filter = this.parentElement.querySelector(`svg[data-uuid="${this._filterUUID}"]`);
         filter.outerHTML = this.getFilterSVG();
     }
 }
