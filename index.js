@@ -1,7 +1,32 @@
 class SVGCloud extends HTMLElement {
+    get options() {
+        return this.options
+    }
+
+    set options(options) {
+        this._options = Object.assign(this._options, options);
+        this.redeployCloud();
+    }
+
     constructor() {
         super();
         this.onMutation = this.onMutation.bind(this);
+        this._options = { layers: {} }
+    }
+    
+    // Set layer options. Triggers a re-deploy of the filter objects for each layer.
+    redeployCloud() {
+        Object.entries(this._options['layers']).forEach((entry) => {
+            const [ selector, options ] = entry;
+            const children = this.querySelectorAll(selector);
+            
+            children.forEach(child => {
+                console.log(child);
+                if (child.nodeName === "SVG-CLOUD-PART") {
+                    child.options = Object.assign(child.options, options);
+                };
+            });
+        });
     }
 
     connectedCallback() {
@@ -19,10 +44,10 @@ class SVGCloud extends HTMLElement {
         // Note that we only watch for child list changes here, as defined in the `connectedCallback`.
         for (const mutation of mutations) {
             for (const el of mutation.addedNodes) {
-                if (el.nodeName == "CLOUD-COMPONENT") {
+                if (el.nodeName == "SVG-CLOUD-PART") {
                     if (el.getAttribute("data-uuid") === null) {
-                        const cloudComponentUUID = crypto.randomUUID();
-                        el.connectFilter(cloudComponentUUID);
+                        const cloudPartUUID = crypto.randomUUID();
+                        el.connectFilter(cloudPartUUID);
                     };
                 };
             };
@@ -30,43 +55,80 @@ class SVGCloud extends HTMLElement {
     }
 }
 
-class SVGCloudComponent extends HTMLElement {
+class SVGCloudPart extends HTMLElement {
+    static get observedAttributes() {
+        return [
+            "seed",
+            "animate",
+            "animation-duration",
+            "turbulence-frequency",
+            "turbulence-octaves",
+            "blur-amount",
+            "displacement-scale",
+        ];
+    }
+
+    getDefaultOptions() {
+        return {
+            seed: 0,
+            animate: true,
+            animationDuration: "20s",
+            turbulenceFrequency: 0.012,
+            turbulenceOctaves: 4,
+            blurAmount: 15,
+            displacementScale: 120,
+        };
+    }
+
     get options() {
-        return this.options
+        if (this._options === undefined) {
+            this._options = {};
+        }
+        return this._options;
     }
 
     set options(options) {
-        this._options = options;
+        this._options = Object.assign(this._options, options);
         this.updateValues();
         this.redeployFilter();
     }
 
     constructor() {
         super();
-        this._options = {}
-
+        this._options = this.getDefaultOptions();
         this.updateValues();
 
-        this.filterUUID = crypto.randomUUID();
-        this.filterSVG = this.getFilterSVG();
+        // Internal stuff for tracking our filter node.
+        this._filterUUID = crypto.randomUUID();
+        this._filterSVG = this.getFilterSVG();
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        this.updateValues();
+        this.redeployFilter();
     }
 
     updateValues() {
-        this._seed = this.getAttribute("seed") ?? this._options["seed"] ?? 0;
-        this._turbulenceFrequency = this.getAttribute("turbulenceFrequency") ?? this._options["turbulenceFrequency"] ?? 0.012;
-        this._turbulenceOctaves = this.getAttribute("turbulenceOctaves") ?? this._options["turbulenceOctaves"] ?? 4;
-        this._animationDuration = this.getAttribute("animationDuration") ?? this._options["animationDuration"] ?? "20s";
-        this._blurAmount = this.getAttribute("blurAmount") ?? this._options["blurAmount"] ?? 15;
-        this._displacementScale = this.getAttribute("displacementScale") ?? this._options["displacementScale"] ?? 120;
+        this._seed = this.getAttribute("seed") ?? this._options["seed"];
+        this._animate = this.getAttribute("animate") ?? this._options["animate"]
+        this._animationDuration = this.getAttribute("animation-duration") ?? this._options["animationDuration"];
+        this._turbulenceFrequency = this.getAttribute("turbulence-frequency") ?? this._options["turbulenceFrequency"];
+        this._turbulenceOctaves = this.getAttribute("turbulence-octaves") ?? this._options["turbulenceOctaves"];
+        this._blurAmount = this.getAttribute("blur-amount") ?? this._options["blurAmount"];
+        this._displacementScale = this.getAttribute("displacement-scale") ?? this._options["displacementScale"];
+
+        console.log(this)
+        console.log(this.getAttribute("animation-duration"))
     }
 
     getFilterSVG() {
+        const animationTag = `<animate attributeName="values" values="0;360" dur="${this._animationDuration}" repeatCount="indefinite"/>`
         return `
-            <svg data-uuid="${this.filterUUID}">
-                <filter id="${this.filterUUID}">
+            <svg data-uuid="${this._filterUUID}">
+                <filter id="${this._filterUUID}">
                     <feTurbulence type="fractalNoise" seed=${this._seed} result="base" baseFrequency="${this._turbulenceFrequency}" numOctaves="${this._turbulenceOctaves}" />
                     <feColorMatrix in="base" type="hueRotate" values="0" result="base-shifted">
-                        <animate attributeName="values" values="0;360" dur="${this._animationDuration}" repeatCount="indefinite"/>
+                        ${this._animate ? animationTag : ""}
                     </feColorMatrix>
                     <feColorMatrix in="base-shifted" result="cloud-tex" type="matrix" 
                         values="1 0 0 0 -1
@@ -86,11 +148,11 @@ class SVGCloudComponent extends HTMLElement {
 
         const newStyle = document.createElement("style");
         newStyle.innerHTML = `
-            cloud-component[data-uuid="${uuid}"] {
-                filter: url(#${this.filterUUID});
+            svg-cloud-part[data-uuid="${uuid}"] {
+                filter: url(#${this._filterUUID});
             }
 
-            svg[data-uuid="${this.filterUUID}"] {
+            svg[data-uuid="${this._filterUUID}"] {
                 width: 0;
                 height: 0;
                 position: absolute;
@@ -104,10 +166,10 @@ class SVGCloudComponent extends HTMLElement {
     }
 
     redeployFilter() {
-        const filter = document.querySelector(`svg[data-uuid="${this.filterUUID}"]`);
+        const filter = document.querySelector(`svg[data-uuid="${this._filterUUID}"]`);
         filter.outerHTML = this.getFilterSVG();
     }
 }
 
 customElements.define('svg-cloud', SVGCloud);
-customElements.define('cloud-component', SVGCloudComponent);
+customElements.define('svg-cloud-part', SVGCloudPart);
