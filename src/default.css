@@ -1,0 +1,35 @@
+svg-cloud-part.cloud-back {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+
+    border-radius: 50% 50% 5% 5%;
+    background-color: #fff;
+    box-shadow: 0 0 4rem 0px #fff;
+}
+
+svg-cloud-part.cloud-mid {
+    position: absolute;
+    width: 90%;
+    height: 30%;
+    left: 50%;
+    top: 100%;
+    transform: translate(-50%, -100%);
+
+    border-radius: 50% 50% 5% 5%;
+    background-color: #ccc;
+    box-shadow: 0 0 4rem 0px #ccc;
+}
+
+svg-cloud-part.cloud-front {
+    position: absolute;
+    width: 80%;
+    height: 5%;
+    left: 50%;
+    top: 100%;
+    transform: translate(-50%, -100%);
+
+    border-radius: 50% 50% 5% 5%;
+    background-color: #888;
+    box-shadow: 0 0 4rem 0px #888;
+}
