@@ -8,9 +8,11 @@ TODO: Describe the installation process
 
 ## Usage
 
-Making a cloud is as easy as adding `<svg-cloud><svg-cloud-part></svg-cloud-part></svg-cloud>` anywhere in your markup. Clouds, by default, consist of three layers and slowly animate.
+Making a cloud is as easy as adding an `<svg-cloud>`, filling it with as many `<svg-cloud-part>` elements as desired, and styling it. For example, if you want to build a realiistic cloud you may want to include three `<svg-cloud-part>` elements and style them as semi-circles of decreasing size and color value. Once the filters are applied you'll get something that looks like the side-by-side here:
 
-TODO: Note about styling.
+![](comparison.png)
+
+**Note:** Adding a `box-shadow` to your underlying elements greatly enhances the effect by reducing jagged edges and smoothing out the transitions between layers. I highly recommend playing around with it!
 
 You can style clouds and their layers to alter their look. Generally speaking, for realistic clouds you'll want to mess around with `background-color`, `box-shadow`, and `border-radius` to achieve a pillow-y look. Because this effect is achieved with SVG filters, however, you should be able to style your `<svg-cloud-part>`s in just about any way you'd like and it should *Do The Thing*.
 
@@ -71,10 +73,6 @@ When working with attributes, it's the same but... attributes.
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request!
 
-## History
-
-TODO: Write history
-
 ## Credits
 
 Written and maintained by Ethan Morrill-Ploum.
@@ -83,4 +81,4 @@ Special thanks to Beau Jackson, whose ["Drawing Realistic Clouds with SVG and CS
 
 ## License
 
-TODO: Write license
+Licensed under the [MIT License](LICENSE.txt). 
