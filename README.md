@@ -12,7 +12,7 @@ A dependency-free, SVG filter-based cloud generator for rendering animated cloud
 
 ### Basic markup and styling
 
-Making a cloud is as easy as adding an `<svg-cloud>`, filling it with as many `<svg-cloud-part>` elements as desired, and styling it. For example, if you want to build a realistic cloud you may want to include three `<svg-cloud-part>` elements and style them as semi-circles of decreasing size and color value. Once the filters are applied you'll get something that looks like the side-by-side here:
+Making a cloud is as easy as adding an `<svg-cloud>`, filling it with as many `<svg-cloud-part>` elements as desired, and styling it. For example, if you want to build a realistic cloud you may want to include three `<svg-cloud-part>` elements and style them as semi-circles of decreasing size and color value.
 
 ![](./img/Comparison.png)
 

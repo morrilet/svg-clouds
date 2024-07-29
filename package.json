@@ -1,6 +1,6 @@
 {
   "name": "svg-clouds",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A set of dynamic SVG filters and Javascript utilities for generating clouds",
   "main": "index.js",
   "scripts": {
@@ -13,5 +13,9 @@
   "license": "MIT",
   "files": [
     "/src"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/morrilet/svg-clouds.git"
+  }
 }
