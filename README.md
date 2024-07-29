@@ -4,21 +4,35 @@ A dependency-free, SVG filter-based cloud generator for rendering animated cloud
 
 ## Installation
 
-TODO: Describe the installation process
+1. Install the package with `npm install svg-clouds`
+2. Add the svg-cloud script to your markup with `<script src="node_modules/svg-clouds/src/index.js"></script>`
+3. (Optional) Include default styles in your markup with `<link rel="stylesheet" href="node_modules/svg-clouds/src/default.css">`
 
 ## Usage
 
 ### Basic markup and styling
 
-Making a cloud is as easy as adding an `<svg-cloud>`, filling it with as many `<svg-cloud-part>` elements as desired, and styling it. For example, if you want to build a realiistic cloud you may want to include three `<svg-cloud-part>` elements and style them as semi-circles of decreasing size and color value. Once the filters are applied you'll get something that looks like the side-by-side here:
+Making a cloud is as easy as adding an `<svg-cloud>`, filling it with as many `<svg-cloud-part>` elements as desired, and styling it. For example, if you want to build a realistic cloud you may want to include three `<svg-cloud-part>` elements and style them as semi-circles of decreasing size and color value. Once the filters are applied you'll get something that looks like the side-by-side here:
 
 ![](./img/Comparison.png)
 
-**Note:** Adding a `box-shadow` to your underlying elements greatly enhances the effect by reducing jagged edges and smoothing out the transitions between layers. I highly recommend playing around with it!
+I've included some default styles to get you started, which include three classes - `cloud-front`, `cloud-mid`, and `cloud-back`. Adding the following markup and positioning the containing `<svg-cloud>` element should get you more or less the same cloud as I show in the comparison above.
 
-**Note:** I've included `src/default.css` to get you started, but have a go at tweaking this to suit your needs. It's fun to see what you can come up with!
+``` html
+<svg-cloud>
+    <svg-cloud-part class="cloud-back"></svg-cloud-part>
+    <svg-cloud-part class="cloud-mid"></svg-cloud-part>
+    <svg-cloud-part class="cloud-front"></svg-cloud-part>
+</svg-cloud>
+```
 
-Generally speaking, for realistic clouds you'll want to mess around with `background-color`, `box-shadow`, and `border-radius` to achieve a pillow-y look. Because this effect is achieved with SVG filters you should be able to style your `<svg-cloud-part>`s in just about any way you'd like and it should *Do The Thing*.
+If you're looking to style your own clouds (and you totally should), here are some tips:
+
+* Adding a `box-shadow` to your underlying elements greatly enhances the effect by reducing jagged edges and smoothing out the transitions between layers.
+* Messing with the `background-color` and the color of your `box-shadow` is one of the fastest ways to change the mood of your cloud.
+* Playing with `border-radius` can help you achieve a more rounded, pillow-y look.
+
+Because this effect is achieved with SVG filters you should be able to style your `<svg-cloud-part>`s in just about any way you'd like and it should *Do The Thing*.
 
 ### Advanced options
 
