@@ -10,7 +10,7 @@ TODO: Describe the installation process
 
 Making a cloud is as easy as adding an `<svg-cloud>`, filling it with as many `<svg-cloud-part>` elements as desired, and styling it. For example, if you want to build a realiistic cloud you may want to include three `<svg-cloud-part>` elements and style them as semi-circles of decreasing size and color value. Once the filters are applied you'll get something that looks like the side-by-side here:
 
-![](./Comparison.png)
+![](./img/Comparison.png)
 
 **Note:** Adding a `box-shadow` to your underlying elements greatly enhances the effect by reducing jagged edges and smoothing out the transitions between layers. I highly recommend playing around with it!
 
